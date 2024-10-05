@@ -7,11 +7,11 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Header from "./components/ui/custom/Header.jsx";
 const router = createBrowserRouter([
   {
-    path: "/PLANORA/Home",
+    path: "/",
     element: <App />,
   },
   {
-    path: "/PLANORA/create-trip",
+    path: "/create-trip",
     element: <CreateTrip />,
   },
 ]);
