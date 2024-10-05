@@ -11,7 +11,7 @@ const router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: "/create-trip",
+    path: "create-trip",
     element: <CreateTrip />,
   },
 ]);
@@ -19,6 +19,6 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Header />
-    <RouterProvider router={router} />
+    <RouterProvider router={router} basename="/PLANORA" />
   </StrictMode>
 );
