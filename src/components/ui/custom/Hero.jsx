@@ -17,7 +17,7 @@ function Hero() {
         user-friendly interface and customizable options, it ensures your trip
         is perfectly planned from start to finish.
       </p>
-      <Link to={"/create-trip"}>
+      <Link to={"/PLANORA/create-trip"}>
         <Button> Map Your Trip Now </Button>
       </Link>
     </div>
