@@ -18,6 +18,9 @@ function CreateTrip() {
 
   // Function to handle and update form input changes
   const handleInputChange = (name, value) => {
+    if (name == "noOfDays" && value > 7) {
+      console.log("Please enter days maximum to 7 ");
+    }
     setFormData({
       ...formData, // Spread the previous form data
       [name]: value, // Update the specific field by name
@@ -35,7 +38,12 @@ function CreateTrip() {
   /* useEffect(() => {
     console.log(formData); // Log form data to the console when it changes
   }, [formData]); */
-
+  const OnGenerateTrip = () => {
+    if (formData?.noOfDays > 7) {
+      return;
+    }
+    console.log(formData);
+  };
   return (
     <div className="sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10 ml-20">
       {/* Title and description for the form */}
@@ -129,7 +137,7 @@ function CreateTrip() {
 
       {/* Button to generate the trip */}
       <div className="my-10 justify-end flex">
-        <Button> Generate Trip </Button>
+        <Button onClick={OnGenerateTrip}> Generate Trip </Button>
       </div>
     </div>
   );
