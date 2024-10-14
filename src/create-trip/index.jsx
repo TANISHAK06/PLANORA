@@ -1,24 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   GeoapifyGeocoderAutocomplete,
   GeoapifyContext,
 } from "@geoapify/react-geocoder-autocomplete";
 import "@geoapify/geocoder-autocomplete/styles/minimal.css";
-import { SelectBudgetOptions } from "@/constants/options.jsx";
+import { AI_PROMPT, SelectBudgetOptions } from "@/constants/options.jsx";
 import { SelectTravelersList } from "@/constants/options.jsx";
 import { Button } from "@/components/ui/button";
+import { chatSession } from "@/service/AIMODEL";
+//import { toast, Toaster } from "@/components/ui/sonner";
 
 function CreateTrip() {
   // State to store selected place from Geoapify
-  const [place, setPlace] = useState();
+  const [place, setPlace] = useState(null); // Initialize place as null
 
   // State to store all form data like destination, budget, number of days, and travelers
   const [formData, setFormData] = useState({});
 
   // Function to handle and update form input changes
   const handleInputChange = (name, value) => {
-    if (name == "noOfDays" && value > 7) {
+    if (name === "noOfDays" && value > 7) {
       console.log("Please enter days maximum to 7 ");
     }
     setFormData({
@@ -30,20 +32,31 @@ function CreateTrip() {
   // Function to handle place selection from Geoapify autocomplete component
   const handlePlaceSelect = (value) => {
     setPlace(value); // Store the selected place in state
-    handleInputChange("location", value); // Add the selected location to form data
+    handleInputChange("location", value.properties?.formatted); // Add the selected location to form data
   };
 
-  // Useful for debugging
-
-  /* useEffect(() => {
-    console.log(formData); // Log form data to the console when it changes
-  }, [formData]); */
-  const OnGenerateTrip = () => {
-    if (formData?.noOfDays > 7) {
+  const OnGenerateTrip = async () => {
+    if ((formData?.noOfDays > 7 && !formData?.location) || !formData?.budget) {
       return;
     }
-    console.log(formData);
+
+    // Safely check for formData.location before replacing
+    const FINAL_PROMPT = AI_PROMPT.replace(
+      "{location}",
+      formData?.location || "your selected destination"
+    )
+      .replace("{noOfDays}", formData?.noOfDays)
+      .replace("{people}", formData?.people)
+      .replace("{budget}", formData?.budget)
+      .replace("{noOfDays}", formData?.noOfDays);
+
+    console.log(FINAL_PROMPT);
+
+    const result = await chatSession.sendMessage(FINAL_PROMPT);
+
+    console.log(result?.response?.text());
   };
+
   return (
     <div className="sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10 ml-20">
       {/* Title and description for the form */}
@@ -93,7 +106,7 @@ function CreateTrip() {
                 onClick={() => handleInputChange("budget", item.title)} // Update form data with selected budget
                 className={`p-4 border cursor-pointer
                 rounded-lg hover:shadow-md 
-                ${formData?.budget == item.title && "shadow-lg border-black"}
+                ${formData?.budget === item.title && "shadow-lg border-black"}
                 `}
               >
                 <h2 className="text-4xl">{item.icon}</h2> {/* Budget icon */}
@@ -118,7 +131,9 @@ function CreateTrip() {
                 onClick={() => handleInputChange("people", item.people)} // Update form data with selected number of people
                 className={`p-4 border cursor-pointer
                   rounded-lg hover:shadow-md 
-                  ${formData?.people == item.people && "shadow-lg border-black"}
+                  ${
+                    formData?.people === item.people && "shadow-lg border-black"
+                  }
                   `}
               >
                 <h2 className="text-4xl text-center ">{item.icon}</h2>{" "}
